@@ -5,10 +5,11 @@
 # gen-test-target to generate each golang unit test.
 # The script is based on kusttestharness_test.go from kubernetes-sigs/pkg/kusttest/kusttestharness.go
 #
-if [[ $(basename $PWD) != "manifests" ]]; then
-  echo "must be at manifests root directory to run $0"
-  exit 1
-fi
+set -ex
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+pushd .
+cd ${DIR}/..
 
 source hack/utils.sh
 rm -f $(ls tests/*_test.go | grep -v kusttestharness_test.go)
@@ -21,3 +22,5 @@ for i in $(find * -type d -exec sh -c '(ls -p "{}"|grep />/dev/null)||echo "{}"'
     ./hack/gen-test-target.sh $absdir > tests/$testname
   fi
 done
+
+popd
